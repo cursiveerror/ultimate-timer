@@ -108,7 +108,7 @@ h1 {
 }
 
 .input-group {
-  margin-bottom: 20px;
+  margin-top: 20px;
   text-align: left;
   position: relative;
 }
@@ -134,7 +134,7 @@ label {
 }
 
 .select-selected {
-  background-color: #ffffff;
+  background-color: var(--surface-color);
   color: var(--text-main);
   border: 1px solid var(--surface-border);
   border-radius: 12px;
@@ -175,7 +175,7 @@ label {
 
 .select-items {
   position: absolute;
-  background-color: #ffffff;
+  background-color: var(--surface-color);
   top: 100%;
   left: 0;
   right: 0;
@@ -343,7 +343,7 @@ button {
   padding: 30px;
   border-radius: 20px;
   font-size: 1.5rem;
-  background: #ffffff;
+  background: var(--surface-color);
   color: var(--text-main);
   box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   border: 2px solid transparent;
@@ -472,13 +472,47 @@ button {
   color: var(--text-muted);
   font-weight: 500;
   line-height: 1.5;
-  margin-bottom: 20px;
+  margin-top: 20px;
   padding: 0 10px;
   transition: color 0.3s ease;
 }
 
 
-  </style>
+  
+[data-theme="dark"] {
+  --bg-color: #050505;
+  --surface-color: rgba(24, 24, 27, 0.85);
+  --surface-border: rgba(16, 185, 129, 0.3);
+  --primary: #10b981;
+  --primary-hover: #34d399;
+  --secondary: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --glow-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
+}
+
+.theme-toggle {
+  margin: 30px auto 0;
+  background: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  color: var(--text-main);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  z-index: 100;
+  padding: 0;
+}
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+</style>
 
   <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json">
@@ -487,6 +521,34 @@ button {
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Timer">
   <link rel="apple-touch-icon" href="icons/icon_192.png">
+
+
+  <script>
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    }
+    initTheme();
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      }
+    });
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+  </script>
 
 </head>
 <body>
@@ -510,7 +572,13 @@ button {
         <span class="text">Запікати</span>
       </button>
     </div>
-  </div>
+  
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Перемикач теми">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+</div>
 
   <!-- Screen 2: Selection -->
   <div id="selection-screen" class="screen hidden">
