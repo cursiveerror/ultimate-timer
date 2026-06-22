@@ -7,10 +7,15 @@
 *Таймер майже для всього! Розумний кулінарний помічник для ідеального приготування страв.*
 
 <div align="center">
+
 ## 🚀 [ВІДКРИТИ ДОДАТОК (Live Demo)](https://cursiveerror.github.io/ultimate-timer/)
+
 *Скануй QR-код або переходь за посиланням з телефону для найкращого досвіду!*
+
 <br>
+
 <img src="https://github.com/user-attachments/assets/8b6f2060-9c47-4af8-bb34-73e179b240d1" width="200" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+
 </div>
 
 ## 🌟 Про проєкт
