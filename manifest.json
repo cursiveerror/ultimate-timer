@@ -1,6 +1,6 @@
 {
-  "name": "Ultimate Timer",
-  "short_name": "Timer",
+  "name": "незгорить",
+  "short_name": "незгорить",
   "description": "Розумний кулінарний таймер для ідеального приготування",
   "start_url": "./index.html",
   "display": "standalone",

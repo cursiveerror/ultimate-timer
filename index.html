@@ -1,518 +1,575 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ultimate Timer</title>
-  
+  <title>незгорить</title>
+
   <style>
-@font-face {
-  font-family: 'Inter';
-  src: url('fonts/Inter-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('fonts/Inter-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('fonts/Inter-SemiBold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('fonts/Inter-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('fonts/Inter-ExtraBold.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-}
-
-
-
-:root {
-  --bg-color: #f0fdf4; /* Light green background */
-  --surface-color: rgba(255, 255, 255, 0.85); /* White glass */
-  --surface-border: rgba(16, 185, 129, 0.2);
-  --primary: #10b981; /* Emerald green */
-  --primary-hover: #059669;
-  --secondary: #ef4444; /* Red for pulse */
-  --text-main: #1f2937; /* Dark gray for high contrast */
-  --text-muted: #6b7280;
-  --glow-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', sans-serif;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  background: var(--bg-color);
-  background-image: radial-gradient(circle at top right, #d1fae5, var(--bg-color));
-  color: var(--text-main);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100dvh;
-  padding: 20px;
-}
-
-.app-container {
-  width: 100%;
-  max-width: 420px;
-  background: var(--surface-color);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--surface-border);
-  padding: 40px 25px;
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Subtle background accent */
-.app-container::before {
-  content: '';
-  position: absolute;
-  top: -50px;
-  left: -50px;
-  width: 150px;
-  height: 150px;
-  background: var(--primary);
-  filter: blur(100px);
-  opacity: 0.15;
-  z-index: -1;
-}
-
-h1 {
-  font-size: 2rem;
-  margin-bottom: 30px;
-  font-weight: 800;
-  color: var(--primary);
-  letter-spacing: 0.5px;
-}
-
-.input-group {
-  margin-top: 20px;
-  text-align: left;
-  position: relative;
-}
-
-label {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-muted);
-  padding-left: 5px;
-}
-
-/* Hide native select */
-.input-group select {
-  display: none;
-}
-
-/* CUSTOM SELECT STYLES */
-.custom-select {
-  position: relative;
-  width: 100%;
-}
-
-.select-selected {
-  background-color: var(--surface-color);
-  color: var(--text-main);
-  border: 1px solid var(--surface-border);
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 1.05rem;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.3s ease;
-}
-
-.select-selected:hover {
-  border-color: var(--primary);
-}
-
-.select-selected::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 16px;
-  margin-top: -3px;
-  border: 6px solid transparent;
-  border-top-color: var(--text-muted);
-  transition: transform 0.3s ease;
-}
-
-.select-selected.select-arrow-active {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.select-selected.select-arrow-active::after {
-  transform: rotate(180deg);
-  margin-top: -9px;
-  border-top-color: var(--primary);
-}
-
-.select-items {
-  position: absolute;
-  background-color: var(--surface-color);
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 99;
-  border: 1px solid var(--surface-border);
-  border-top: none;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-/* Scrollbar styles */
-.select-items::-webkit-scrollbar {
-  width: 6px;
-}
-.select-items::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-}
-.select-items::-webkit-scrollbar-thumb {
-  background: #c1c1c1; 
-  border-radius: 10px;
-}
-.select-items::-webkit-scrollbar-thumb:hover {
-  background: var(--primary); 
-}
-
-.select-items div {
-  color: var(--text-main);
-  padding: 14px 16px;
-  cursor: pointer;
-  user-select: none;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  transition: background 0.2s ease, padding-left 0.2s ease;
-}
-
-.select-items div:last-child {
-  border-bottom: none;
-}
-
-.select-items div:hover, .same-as-selected {
-  background-color: #ecfdf5;
-  color: var(--primary);
-  font-weight: 600;
-  padding-left: 20px;
-}
-
-
-.select-items.select-up {
-  top: auto;
-  bottom: 100%;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  border-top: 1px solid var(--surface-border);
-  border-bottom: none;
-  box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.1);
-}
-.select-selected.select-arrow-active-up {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-.select-selected.select-arrow-active-up::after {
-  transform: rotate(180deg);
-  margin-top: -9px;
-  border-top-color: var(--primary);
-}
-.select-hide {
-
-  display: none;
-}
-
-button {
-  width: 100%;
-  padding: 18px;
-  margin-top: 15px;
-  border: none;
-  border-radius: 14px;
-  font-size: 1.15rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  letter-spacing: 0.5px;
-}
-
-#calc-btn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  color: #fff;
-  box-shadow: var(--glow-shadow);
-}
-
-#calc-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
-}
-
-#calc-btn:active {
-  transform: translateY(1px);
-}
-
-.secondary-btn {
-  background: #f1f5f9;
-  color: var(--text-muted);
-  border: 1px solid #e2e8f0;
-  margin-top: 30px;
-}
-
-.secondary-btn:hover {
-  background: #e2e8f0;
-  color: var(--text-main);
-}
-
-
-/* NEW CSS FOR SCREENS */
-.screen {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  animation: fadeInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.screen.hidden {
-  display: none !important;
-}
-
-.screen.slide-out {
-  animation: fadeOutLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeInRight {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@keyframes fadeOutLeft {
-  from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(-30px); }
-}
-
-.main-title {
-  font-size: 2.5rem;
-  margin-bottom: 5px;
-}
-.subtitle {
-  color: var(--text-muted);
-  margin-bottom: 40px;
-  font-weight: 500;
-}
-
-.home-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.huge-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  padding: 30px;
-  border-radius: 20px;
-  font-size: 1.5rem;
-  background: var(--surface-color);
-  color: var(--text-main);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-  border: 2px solid transparent;
-}
-.huge-btn .emoji { font-size: 2rem; }
-.huge-btn:hover {
-  border-color: var(--primary);
-  transform: translateY(-4px);
-  box-shadow: 0 15px 30px rgba(16, 185, 129, 0.15);
-}
-
-.screen-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 25px;
-  position: relative;
-}
-
-.back-btn {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--primary);
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  margin-right: 15px;
-  transition: all 0.2s ease;
-}
-
-.back-btn:hover {
-  background: var(--primary);
-  color: #fff;
-  transform: translateX(-3px);
-}
-
-.screen-header h2 {
-  font-size: 1.4rem;
-  color: var(--primary);
-  font-weight: 800;
-  margin: 0;
-}
-
-
-
-.timer-section {
-
-  justify-content: flex-start;
-  min-height: auto;
-}
-.timer-header { margin-bottom: 50px; }
-.timer-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1;
-}
-
-/* Remove old conflicting transitions */
-.controls.fade-out { display: block; }
-
-/* Old Transitions */
-.controls {
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.controls.fade-out {
-  opacity: 0;
-  transform: scale(0.95);
-  pointer-events: none;
-  position: absolute;
-}
-
-.hidden {
-  display: none !important;
-}
-
-
-
-.timer-section {
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 350px;
-}
-
-.timer-section.active {
-  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.time-display {
-  font-size: 5.5rem;
-  font-weight: 800;
-  margin: 30px 0;
-  color: var(--primary);
-  text-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
-  font-variant-numeric: tabular-nums;
-  transition: all 0.3s ease;
-}
-
-.time-display.pulse {
-  animation: pulseWarning 1s infinite alternate;
-  color: var(--secondary);
-}
-
-@keyframes pulseWarning {
-  0% { transform: scale(1); text-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
-  100% { transform: scale(1.05); text-shadow: 0 0 40px rgba(239, 68, 68, 0.8); }
-}
-
-.ai-tip {
-  font-size: 1.05rem;
-  color: var(--text-muted);
-  font-weight: 500;
-  line-height: 1.5;
-  margin-top: 20px;
-  padding: 0 10px;
-  transition: color 0.3s ease;
-}
-
-
-  
-[data-theme="dark"] {
-  --bg-color: #050505;
-  --surface-color: rgba(24, 24, 27, 0.85);
-  --surface-border: rgba(16, 185, 129, 0.3);
-  --primary: #10b981;
-  --primary-hover: #34d399;
-  --secondary: #ef4444;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --glow-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
-}
-
-.theme-toggle {
-  margin: 30px auto 0;
-  background: var(--surface-color);
-  border: 1px solid var(--surface-border);
-  color: var(--text-main);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  z-index: 100;
-  padding: 0;
-}
-.theme-toggle:hover {
-  transform: scale(1.1);
-}
-
-</style>
+    @font-face {
+      font-family: 'Inter';
+      src: url('fonts/Inter-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      src: url('fonts/Inter-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      src: url('fonts/Inter-SemiBold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      src: url('fonts/Inter-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      src: url('fonts/Inter-ExtraBold.ttf') format('truetype');
+      font-weight: 800;
+      font-style: normal;
+    }
+
+
+
+    :root {
+      --bg-color: #f0fdf4;
+      /* Light green background */
+      --surface-color: rgba(255, 255, 255, 0.85);
+      /* White glass */
+      --surface-border: rgba(16, 185, 129, 0.2);
+      --primary: #10b981;
+      /* Emerald green */
+      --primary-hover: #059669;
+      --secondary: #ef4444;
+      /* Red for pulse */
+      --text-main: #1f2937;
+      /* Dark gray for high contrast */
+      --text-muted: #6b7280;
+      --glow-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-color);
+      background-image: radial-gradient(circle at top right, #d1fae5, var(--bg-color));
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100dvh;
+      padding: 20px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface-color);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--surface-border);
+      padding: 40px 25px;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle background accent */
+    .app-container::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 150px;
+      height: 150px;
+      background: var(--primary);
+      filter: blur(100px);
+      opacity: 0.15;
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    .input-group {
+      margin-top: 20px;
+      text-align: left;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      padding-left: 5px;
+    }
+
+    /* Hide native select */
+    .input-group select {
+      display: none;
+    }
+
+    /* CUSTOM SELECT STYLES */
+    .custom-select {
+      position: relative;
+      width: 100%;
+    }
+
+    .select-selected {
+      background-color: var(--surface-color);
+      color: var(--text-main);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.3s ease;
+    }
+
+    .select-selected:hover {
+      border-color: var(--primary);
+    }
+
+    .select-selected::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      margin-top: -3px;
+      border: 6px solid transparent;
+      border-top-color: var(--text-muted);
+      transition: transform 0.3s ease;
+    }
+
+    .select-selected.select-arrow-active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .select-selected.select-arrow-active::after {
+      transform: rotate(180deg);
+      margin-top: -9px;
+      border-top-color: var(--primary);
+    }
+
+    .select-items {
+      position: absolute;
+      background-color: var(--surface-color);
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 99;
+      border: 1px solid var(--surface-border);
+      border-top: none;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    /* Scrollbar styles */
+    .select-items::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .select-items::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .select-items::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+
+    .select-items::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    .select-items div {
+      color: var(--text-main);
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      transition: background 0.2s ease, padding-left 0.2s ease;
+    }
+
+    .select-items div:last-child {
+      border-bottom: none;
+    }
+
+    .select-items div:hover,
+    .same-as-selected {
+      background-color: #ecfdf5;
+      color: var(--primary);
+      font-weight: 600;
+      padding-left: 20px;
+    }
+
+
+    .select-items.select-up {
+      top: auto;
+      bottom: 100%;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      border-top: 1px solid var(--surface-border);
+      border-bottom: none;
+      box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .select-selected.select-arrow-active-up {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    .select-selected.select-arrow-active-up::after {
+      transform: rotate(180deg);
+      margin-top: -9px;
+      border-top-color: var(--primary);
+    }
+
+    .select-hide {
+
+      display: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      letter-spacing: 0.5px;
+    }
+
+    #calc-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #fff;
+      box-shadow: var(--glow-shadow);
+    }
+
+    #calc-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
+    }
+
+    #calc-btn:active {
+      transform: translateY(1px);
+    }
+
+    .secondary-btn {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid #e2e8f0;
+      margin-top: 30px;
+    }
+
+    .secondary-btn:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+
+    /* NEW CSS FOR SCREENS */
+    .screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      animation: fadeInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .screen.hidden {
+      display: none !important;
+    }
+
+    .screen.slide-out {
+      animation: fadeOutLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeOutLeft {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+
+    .main-title {
+      font-size: 2.5rem;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      font-weight: 500;
+    }
+
+    .home-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .huge-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 30px;
+      border-radius: 20px;
+      font-size: 1.5rem;
+      background: var(--surface-color);
+      color: var(--text-main);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      border: 2px solid transparent;
+    }
+
+    .huge-btn .emoji {
+      font-size: 2rem;
+    }
+
+    .huge-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(16, 185, 129, 0.15);
+    }
+
+    .screen-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .back-btn {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--primary);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      margin-right: 15px;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: translateX(-3px);
+    }
+
+    .screen-header h2 {
+      font-size: 1.4rem;
+      color: var(--primary);
+      font-weight: 800;
+      margin: 0;
+    }
+
+
+
+    .timer-section {
+
+      justify-content: flex-start;
+      min-height: auto;
+    }
+
+    .timer-header {
+      margin-bottom: 50px;
+    }
+
+    .timer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+    }
+
+    /* Remove old conflicting transitions */
+    .controls.fade-out {
+      display: block;
+    }
+
+    /* Old Transitions */
+    .controls {
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .controls.fade-out {
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+      position: absolute;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+
+
+    .timer-section {
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 350px;
+    }
+
+    .timer-section.active {
+      animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .time-display {
+      font-size: 5.5rem;
+      font-weight: 800;
+      margin: 30px 0;
+      color: var(--primary);
+      text-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+      font-variant-numeric: tabular-nums;
+      transition: all 0.3s ease;
+    }
+
+    .time-display.pulse {
+      animation: pulseWarning 1s infinite alternate;
+      color: var(--secondary);
+    }
+
+    @keyframes pulseWarning {
+      0% {
+        transform: scale(1);
+        text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+      }
+
+      100% {
+        transform: scale(1.05);
+        text-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
+      }
+    }
+
+    .ai-tip {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      line-height: 1.5;
+      margin-top: 20px;
+      padding: 0 10px;
+      transition: color 0.3s ease;
+    }
+
+
+
+    [data-theme="dark"] {
+      --bg-color: #050505;
+      --surface-color: rgba(24, 24, 27, 0.85);
+      --surface-border: rgba(16, 185, 129, 0.3);
+      --primary: #10b981;
+      --primary-hover: #34d399;
+      --secondary: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --glow-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
+    }
+
+    .theme-toggle {
+      margin: 30px auto 0;
+      background: var(--surface-color);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      z-index: 100;
+      padding: 0;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+  </style>
 
   <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json">
@@ -551,463 +608,467 @@ button {
   </script>
 
 </head>
+
 <body>
   <div class="app-container">
 
-  <!-- Screen 1: Home -->
-  <div id="home-screen" class="screen active">
-    <h1 class="main-title">Ultimate Timer</h1>
-    <p class="subtitle">Оберіть спосіб приготування</p>
-    <div class="home-buttons">
-      <button class="huge-btn boil-btn" onclick="startSelection('Варити')">
-        <span class="emoji">🍲</span>
-        <span class="text">Варити</span>
-      </button>
-      <button class="huge-btn fry-btn" onclick="startSelection('Смажити')">
-        <span class="emoji">🍳</span>
-        <span class="text">Смажити</span>
-      </button>
-      <button class="huge-btn bake-btn" onclick="startSelection('Запікати')">
-        <span class="emoji">🍕</span>
-        <span class="text">Запікати</span>
-      </button>
-    </div>
-  
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Перемикач теми">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-      </svg>
-    </button>
-</div>
+    <!-- Screen 1: Home -->
+    <div id="home-screen" class="screen active">
+      <h1 class="main-title">незгорить</h1>
+      <p class="subtitle">Оберіть спосіб приготування</p>
+      <div class="home-buttons">
+        <button class="huge-btn boil-btn" onclick="startSelection('Варити')">
+          <span class="emoji">🍲</span>
+          <span class="text">Варити</span>
+        </button>
+        <button class="huge-btn fry-btn" onclick="startSelection('Смажити')">
+          <span class="emoji">🍳</span>
+          <span class="text">Смажити</span>
+        </button>
+        <button class="huge-btn bake-btn" onclick="startSelection('Запікати')">
+          <span class="emoji">🍕</span>
+          <span class="text">Запікати</span>
+        </button>
+      </div>
 
-  <!-- Screen 2: Selection -->
-  <div id="selection-screen" class="screen hidden">
-    <div class="screen-header">
-      <button class="back-btn" onclick="goHome()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Перемикач теми">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
-      <h2 id="selection-title">Налаштування</h2>
     </div>
-    
-    <div class="controls" id="controls">
-      <div class="input-group" style="display: none;">
-        <label for="method">Спосіб приготування</label>
-        <select id="method">
-          <option value="Варити">Варити</option>
-          <option value="Смажити">Смажити</option>
-          <option value="Запікати">Запікати</option>
-        </select>
+
+    <!-- Screen 2: Selection -->
+    <div id="selection-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" onclick="goHome()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <h2 id="selection-title">Налаштування</h2>
       </div>
 
-      <div class="input-group">
-        <label for="category">Категорія</label>
-        <select id="category"></select>
-      </div>
+      <div class="controls" id="controls">
+        <div class="input-group" style="display: none;">
+          <label for="method">Спосіб приготування</label>
+          <select id="method">
+            <option value="Варити">Варити</option>
+            <option value="Смажити">Смажити</option>
+            <option value="Запікати">Запікати</option>
+          </select>
+        </div>
 
-      <div class="input-group">
-        <label for="product">Продукт</label>
-        <select id="product"></select>
-      </div>
+        <div class="input-group">
+          <label for="category">Категорія</label>
+          <select id="category"></select>
+        </div>
 
-      <div class="input-group">
-        <label for="subtype">Вид / Особливість</label>
-        <select id="subtype"></select>
-      </div>
+        <div class="input-group">
+          <label for="product">Продукт</label>
+          <select id="product"></select>
+        </div>
 
-      <div class="input-group">
-        <label for="doneness">Ступінь готовності</label>
-        <select id="doneness"></select>
-      </div>
+        <div class="input-group">
+          <label for="subtype">Вид / Особливість</label>
+          <select id="subtype"></select>
+        </div>
 
-      <div class="input-group">
-        <label for="heat">Рівень вогню</label>
-        <select id="heat">
-          <option value="Середній">Середній</option>
-          <option value="Малий">Малий</option>
-          <option value="Великий">Великий</option>
-        </select>
-      </div>
+        <div class="input-group">
+          <label for="doneness">Ступінь готовності</label>
+          <select id="doneness"></select>
+        </div>
 
-      <button id="calc-btn">Розрахувати час</button>
+        <div class="input-group">
+          <label for="heat">Рівень вогню</label>
+          <select id="heat">
+            <option value="Середній">Середній</option>
+            <option value="Малий">Малий</option>
+            <option value="Великий">Великий</option>
+          </select>
+        </div>
+
+        <button id="calc-btn">Розрахувати час</button>
+      </div>
+    </div>
+
+    <!-- Screen 3: Timer -->
+    <div id="timer-screen" class="screen hidden timer-section">
+      <div class="screen-header timer-header" style="justify-content: center;">
+        <h2 style="margin: 0;">Таймер</h2>
+      </div>
+      <div class="timer-content">
+        <div class="ai-tip" id="ai-tip"></div>
+        <div class="time-display" id="time">00:00</div>
+        <button id="stop-btn"
+          style="margin-top: 50px; background: rgba(239, 68, 68, 0.1); color: var(--secondary); border: 2px solid rgba(239, 68, 68, 0.2); box-shadow: none;">Скасувати</button>
+      </div>
     </div>
   </div>
-
-  <!-- Screen 3: Timer -->
-  <div id="timer-screen" class="screen hidden timer-section">
-    <div class="screen-header timer-header" style="justify-content: center;">
-      <h2 style="margin: 0;">Таймер</h2>
-    </div>
-    <div class="timer-content">
-      <div class="ai-tip" id="ai-tip"></div>
-      <div class="time-display" id="time">00:00</div>
-      <button id="stop-btn" style="margin-top: 50px; background: rgba(239, 68, 68, 0.1); color: var(--secondary); border: 2px solid rgba(239, 68, 68, 0.2); box-shadow: none;">Скасувати</button>
-    </div>
-  </div>
-</div>
   <script src="data.js"></script>
   <script>
-// 1. Наша внутрішня база даних
+    // 1. Наша внутрішня база даних
 
 
-// Старі селектори та змінні
-const calcBtn = document.getElementById('calc-btn');
-const stopBtn = document.getElementById('stop-btn');
-const timeDisplay = document.getElementById('time');
-const aiTipDisplay = document.getElementById('ai-tip');
-const dingSound = new Audio('sounds/ding.ogg');
-const ringSound = new Audio('sounds/ring.ogg');
+    // Старі селектори та змінні
+    const calcBtn = document.getElementById('calc-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const timeDisplay = document.getElementById('time');
+    const aiTipDisplay = document.getElementById('ai-tip');
+    const dingSound = new Audio('sounds/ding.ogg');
+    const ringSound = new Audio('sounds/ring.ogg');
 
-// Нові селектори
-const methodSelect = document.getElementById('method');
-const categorySelect = document.getElementById('category');
-const productSelect = document.getElementById('product');
-const subtypeSelect = document.getElementById('subtype');
-const donenessSelect = document.getElementById('doneness');
-const heatSelect = document.getElementById('heat');
+    // Нові селектори
+    const methodSelect = document.getElementById('method');
+    const categorySelect = document.getElementById('category');
+    const productSelect = document.getElementById('product');
+    const subtypeSelect = document.getElementById('subtype');
+    const donenessSelect = document.getElementById('doneness');
+    const heatSelect = document.getElementById('heat');
 
-// SCREEN NAVIGATION LOGIC
-const homeScreen = document.getElementById('home-screen');
-const selectionScreen = document.getElementById('selection-screen');
-const timerScreen = document.getElementById('timer-screen');
+    // SCREEN NAVIGATION LOGIC
+    const homeScreen = document.getElementById('home-screen');
+    const selectionScreen = document.getElementById('selection-screen');
+    const timerScreen = document.getElementById('timer-screen');
 
-function showScreen(screenEl) {
-  [homeScreen, selectionScreen, timerScreen].forEach(s => {
-    if(s !== screenEl && !s.classList.contains('hidden')) {
-      s.classList.add('hidden');
-    }
-  });
-  screenEl.classList.remove('hidden');
-}
-
-function updateHeatOptions() {
-  const method = methodSelect.value;
-  heatSelect.innerHTML = '';
-  
-  let options = [];
-  if (method === "Запікати") {
-    options = ["Великий (220°C)", "Середній (180°C)", "Малий (160°C)"];
-  } else {
-    options = ["Великий", "Середній", "Малий"];
-  }
-  
-  options.forEach(optVal => {
-    const opt = document.createElement('option');
-    opt.value = optVal; // Use full string to match DB exactly
-    opt.textContent = optVal;
-    heatSelect.appendChild(opt);
-  });
-  renderCustomSelect("heat");
-}
-
-function startSelection(method) {
-  // Set method native select
-  methodSelect.value = method;
-  methodSelect.dispatchEvent(new Event('change'));
-  updateHeatOptions();
-  
-  // Update Title
-  document.getElementById('selection-title').innerText = method;
-  
-  // Navigate
-  showScreen(selectionScreen);
-}
-
-function goHome() {
-  showScreen(homeScreen);
-}
-
-function initMethods() {
-  const methods = Object.keys(cookingDB);
-  methodSelect.innerHTML = '';
-  methods.forEach(method => {
-    const opt = document.createElement('option');
-    opt.value = method;
-    opt.textContent = method;
-    methodSelect.appendChild(opt);
-  });
-  updateCategories();
-}
-
-function updateCategories() {
-  const method = methodSelect.value;
-  categorySelect.innerHTML = '';
-  if (!cookingDB[method]) return;
-
-  const categories = Object.keys(cookingDB[method]);
-  categories.forEach(cat => {
-    const opt = document.createElement('option');
-    opt.value = cat;
-    opt.textContent = cat;
-    categorySelect.appendChild(opt);
-  });
-  renderCustomSelect('category');
-  updateProductOptions();
-  updateHeatOptions(); // Fix: Update heat options when method changes
-}
-
-function updateProductOptions() {
-  const method = methodSelect.value;
-  const category = categorySelect.value;
-  
-  productSelect.innerHTML = '';
-  if (!category || !cookingDB[method][category]) return;
-
-  const products = Object.keys(cookingDB[method][category]);
-  products.forEach(product => {
-    const opt = document.createElement('option');
-    opt.value = product;
-    opt.textContent = product;
-    productSelect.appendChild(opt);
-  });
-  renderCustomSelect('product');
-  updateSubtypeOptions();
-}
-
-function updateSubtypeOptions() {
-  const method = methodSelect.value;
-  const category = categorySelect.value;
-  const product = productSelect.value;
-  
-  subtypeSelect.innerHTML = '';
-  if (!category || !product || !cookingDB[method][category][product]) return;
-
-  const subtypes = Object.keys(cookingDB[method][category][product] || {});
-  subtypes.forEach(subtype => {
-    const opt = document.createElement('option');
-    opt.value = subtype;
-    opt.textContent = subtype;
-    subtypeSelect.appendChild(opt);
-  });
-  renderCustomSelect('subtype');
-  updateDonenessOptions();
-}
-
-function updateDonenessOptions() {
-  const method = methodSelect.value;
-  const category = categorySelect.value;
-  const product = productSelect.value;
-  const subtype = subtypeSelect.value;
-  
-  donenessSelect.innerHTML = '';
-  if (!category || !product || !subtype || !cookingDB[method][category][product][subtype]) return;
-
-  const options = Object.keys(cookingDB[method][category][product][subtype] || {});
-  options.forEach(option => {
-    const opt = document.createElement('option');
-    opt.value = option;
-    opt.textContent = option;
-    donenessSelect.appendChild(opt);
-  });
-  renderCustomSelect("doneness");
-}
-
-methodSelect.addEventListener('change', updateCategories);
-categorySelect.addEventListener('change', updateProductOptions);
-productSelect.addEventListener('change', updateSubtypeOptions);
-subtypeSelect.addEventListener('change', updateDonenessOptions);
-
-document.addEventListener('DOMContentLoaded', initMethods);
-
-// CUSTOM SELECT LOGIC
-function renderCustomSelect(selectId) {
-  const selElmnt = document.getElementById(selectId);
-  if (!selElmnt) return;
-  const wrapper = selElmnt.parentNode;
-  
-  // Remove existing custom select if present
-  const existingCustom = wrapper.querySelector('.custom-select');
-  if (existingCustom) {
-    existingCustom.remove();
-  }
-
-  // Create custom select container
-  const customSel = document.createElement("DIV");
-  customSel.setAttribute("class", "custom-select");
-  
-  // Create selected item display
-  const a = document.createElement("DIV");
-  a.setAttribute("class", "select-selected");
-  a.innerHTML = selElmnt.options[selElmnt.selectedIndex]?.innerHTML || "Оберіть...";
-  customSel.appendChild(a);
-
-  // Create items list
-  const b = document.createElement("DIV");
-  b.setAttribute("class", "select-items select-hide");
-  for (let j = 0; j < selElmnt.length; j++) {
-    const c = document.createElement("DIV");
-    c.innerHTML = selElmnt.options[j].innerHTML;
-    if (j === selElmnt.selectedIndex) c.classList.add("same-as-selected");
-    
-    c.addEventListener("click", function(e) {
-        selElmnt.selectedIndex = j;
-        a.innerHTML = this.innerHTML;
-        // update selection styling
-        const siblings = this.parentNode.childNodes;
-        for (let i = 0; i < siblings.length; i++) {
-          siblings[i].classList.remove("same-as-selected");
+    function showScreen(screenEl) {
+      [homeScreen, selectionScreen, timerScreen].forEach(s => {
+        if (s !== screenEl && !s.classList.contains('hidden')) {
+          s.classList.add('hidden');
         }
-        this.classList.add("same-as-selected");
-        
-        // Trigger change event on original select
-        selElmnt.dispatchEvent(new Event('change'));
-        a.click();
-    });
-    b.appendChild(c);
-  }
-  customSel.appendChild(b);
-  
-  a.addEventListener("click", function(e) {
-      e.stopPropagation();
-      closeAllSelect(this);
-      const items = this.nextSibling;
-      items.classList.toggle("select-hide");
-      
-      const rect = this.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      
-      if (spaceBelow < 250 && rect.top > 250) {
-        items.classList.add("select-up");
-        this.classList.toggle("select-arrow-active-up");
+      });
+      screenEl.classList.remove('hidden');
+    }
+
+    function updateHeatOptions() {
+      const method = methodSelect.value;
+      heatSelect.innerHTML = '';
+
+      let options = [];
+      if (method === "Запікати") {
+        options = ["Великий (220°C)", "Середній (180°C)", "Малий (160°C)"];
       } else {
-        items.classList.remove("select-up");
-        this.classList.toggle("select-arrow-active");
+        options = ["Великий", "Середній", "Малий"];
       }
-  });
 
-  wrapper.appendChild(customSel);
-}
-
-function closeAllSelect(elmnt) {
-  const x = document.getElementsByClassName("select-items");
-  const y = document.getElementsByClassName("select-selected");
-  for (let i = 0; i < y.length; i++) {
-    if (elmnt == y[i]) continue;
-    y[i].classList.remove("select-arrow-active");
-    y[i].classList.remove("select-arrow-active-up");
-  }
-  for (let i = 0; i < x.length; i++) {
-    if (elmnt == y[i]) continue;
-    x[i].classList.add("select-hide");
-  }
-}
-
-document.addEventListener("click", closeAllSelect);
-
-// Початкове заповнення
-
-initMethods();
-
-let countdownInterval;
-let totalTimeForFlip = 0;
-let flipAlerted = false;
-
-function playDingThreeTimes() {
-  let count = 0;
-  const interval = setInterval(() => {
-    dingSound.currentTime = 0;
-    dingSound.play().catch(e => console.log(e));
-    count++;
-    if (count >= 3) clearInterval(interval);
-  }, 500);
-}
-
-// 3. Логіка при натисканні на кнопку
-
-// Preload audio on click to fix browser autoplay policies
-calcBtn.addEventListener('click', () => {
-  dingSound.volume = 0;
-  dingSound.play().then(() => { dingSound.pause(); dingSound.currentTime = 0; dingSound.volume = 1; }).catch(e => console.log(e));
-  ringSound.volume = 0;
-  ringSound.play().then(() => { ringSound.pause(); ringSound.currentTime = 0; ringSound.volume = 1; }).catch(e => console.log(e));
-
-  const method = document.getElementById('method').value;
-  const category = document.getElementById('category').value;
-  const product = document.getElementById('product').value;
-  const subtype = document.getElementById('subtype').value;
-  const doneness = document.getElementById('doneness').value;
-  const heat = document.getElementById('heat').value;
-
-  // Шукаємо дані в нашій базі
-  const productData = cookingDB[method]?.[category]?.[product]?.[subtype];
-  
-  if (productData && productData[doneness]) {
-    const timeInSeconds = productData[doneness][heat];
-    const tip = productData[doneness].tip;
-
-
-    // Оновлюємо інтерфейс
-    aiTipDisplay.innerText = tip;
-    
-
-    // Анімації переходу
-    showScreen(timerScreen);
-
-
-    totalTimeForFlip = timeInSeconds;
-
-    flipAlerted = false;
-    
-    // Запускаємо таймер
-    startTimer(timeInSeconds, method);
-  } else {
-    alert("Упс, рецепт для цієї комбінації ще не додано!");
-  }
-});
-
-
-stopBtn.addEventListener('click', () => {
-  clearInterval(countdownInterval);
-  showScreen(selectionScreen);
-  timeDisplay.innerText = "00:00";
-  timeDisplay.classList.remove('pulse');
-});
-
-
-// 4. Функції таймера
-function startTimer(seconds, method) {
-  clearInterval(countdownInterval);
-  let timeLeft = seconds;
-  updateDisplay(timeLeft);
-
-  countdownInterval = setInterval(() => {
-    timeLeft--;
-    updateDisplay(timeLeft);
-    
-    // Перевірка на екватор для смаження
-    if (method === "Смажити" && !flipAlerted && timeLeft <= totalTimeForFlip / 2) {
-      flipAlerted = true;
-      aiTipDisplay.innerText = "🚨 Час перевернути або перемішати!";
-      aiTipDisplay.style.color = "#ffdd57"; // виділимо кольором
-      playDingThreeTimes();
+      options.forEach(optVal => {
+        const opt = document.createElement('option');
+        opt.value = optVal; // Use full string to match DB exactly
+        opt.textContent = optVal;
+        heatSelect.appendChild(opt);
+      });
+      renderCustomSelect("heat");
     }
 
-    
-    if (timeLeft <= 10 && timeLeft > 0) {
-      timeDisplay.classList.add('pulse');
-    } else {
-      timeDisplay.classList.remove('pulse');
+    function startSelection(method) {
+      // Set method native select
+      methodSelect.value = method;
+      methodSelect.dispatchEvent(new Event('change'));
+      updateHeatOptions();
+
+      // Update Title
+      document.getElementById('selection-title').innerText = method;
+
+      // Navigate
+      showScreen(selectionScreen);
     }
 
-    if (timeLeft <= 0) {
+    function goHome() {
+      showScreen(homeScreen);
+    }
 
+    function initMethods() {
+      const methods = Object.keys(cookingDB);
+      methodSelect.innerHTML = '';
+      methods.forEach(method => {
+        const opt = document.createElement('option');
+        opt.value = method;
+        opt.textContent = method;
+        methodSelect.appendChild(opt);
+      });
+      updateCategories();
+    }
+
+    function updateCategories() {
+      const method = methodSelect.value;
+      categorySelect.innerHTML = '';
+      if (!cookingDB[method]) return;
+
+      const categories = Object.keys(cookingDB[method]);
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        categorySelect.appendChild(opt);
+      });
+      renderCustomSelect('category');
+      updateProductOptions();
+      updateHeatOptions(); // Fix: Update heat options when method changes
+    }
+
+    function updateProductOptions() {
+      const method = methodSelect.value;
+      const category = categorySelect.value;
+
+      productSelect.innerHTML = '';
+      if (!category || !cookingDB[method][category]) return;
+
+      const products = Object.keys(cookingDB[method][category]);
+      products.forEach(product => {
+        const opt = document.createElement('option');
+        opt.value = product;
+        opt.textContent = product;
+        productSelect.appendChild(opt);
+      });
+      renderCustomSelect('product');
+      updateSubtypeOptions();
+    }
+
+    function updateSubtypeOptions() {
+      const method = methodSelect.value;
+      const category = categorySelect.value;
+      const product = productSelect.value;
+
+      subtypeSelect.innerHTML = '';
+      if (!category || !product || !cookingDB[method][category][product]) return;
+
+      const subtypes = Object.keys(cookingDB[method][category][product] || {});
+      subtypes.forEach(subtype => {
+        const opt = document.createElement('option');
+        opt.value = subtype;
+        opt.textContent = subtype;
+        subtypeSelect.appendChild(opt);
+      });
+      renderCustomSelect('subtype');
+      updateDonenessOptions();
+    }
+
+    function updateDonenessOptions() {
+      const method = methodSelect.value;
+      const category = categorySelect.value;
+      const product = productSelect.value;
+      const subtype = subtypeSelect.value;
+
+      donenessSelect.innerHTML = '';
+      if (!category || !product || !subtype || !cookingDB[method][category][product][subtype]) return;
+
+      const options = Object.keys(cookingDB[method][category][product][subtype] || {});
+      options.forEach(option => {
+        const opt = document.createElement('option');
+        opt.value = option;
+        opt.textContent = option;
+        donenessSelect.appendChild(opt);
+      });
+      renderCustomSelect("doneness");
+    }
+
+    methodSelect.addEventListener('change', updateCategories);
+    categorySelect.addEventListener('change', updateProductOptions);
+    productSelect.addEventListener('change', updateSubtypeOptions);
+    subtypeSelect.addEventListener('change', updateDonenessOptions);
+
+    document.addEventListener('DOMContentLoaded', initMethods);
+
+    // CUSTOM SELECT LOGIC
+    function renderCustomSelect(selectId) {
+      const selElmnt = document.getElementById(selectId);
+      if (!selElmnt) return;
+      const wrapper = selElmnt.parentNode;
+
+      // Remove existing custom select if present
+      const existingCustom = wrapper.querySelector('.custom-select');
+      if (existingCustom) {
+        existingCustom.remove();
+      }
+
+      // Create custom select container
+      const customSel = document.createElement("DIV");
+      customSel.setAttribute("class", "custom-select");
+
+      // Create selected item display
+      const a = document.createElement("DIV");
+      a.setAttribute("class", "select-selected");
+      a.innerHTML = selElmnt.options[selElmnt.selectedIndex]?.innerHTML || "Оберіть...";
+      customSel.appendChild(a);
+
+      // Create items list
+      const b = document.createElement("DIV");
+      b.setAttribute("class", "select-items select-hide");
+      for (let j = 0; j < selElmnt.length; j++) {
+        const c = document.createElement("DIV");
+        c.innerHTML = selElmnt.options[j].innerHTML;
+        if (j === selElmnt.selectedIndex) c.classList.add("same-as-selected");
+
+        c.addEventListener("click", function (e) {
+          selElmnt.selectedIndex = j;
+          a.innerHTML = this.innerHTML;
+          // update selection styling
+          const siblings = this.parentNode.childNodes;
+          for (let i = 0; i < siblings.length; i++) {
+            siblings[i].classList.remove("same-as-selected");
+          }
+          this.classList.add("same-as-selected");
+
+          // Trigger change event on original select
+          selElmnt.dispatchEvent(new Event('change'));
+          a.click();
+        });
+        b.appendChild(c);
+      }
+      customSel.appendChild(b);
+
+      a.addEventListener("click", function (e) {
+        e.stopPropagation();
+        closeAllSelect(this);
+        const items = this.nextSibling;
+        items.classList.toggle("select-hide");
+
+        const rect = this.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+
+        if (spaceBelow < 250 && rect.top > 250) {
+          items.classList.add("select-up");
+          this.classList.toggle("select-arrow-active-up");
+        } else {
+          items.classList.remove("select-up");
+          this.classList.toggle("select-arrow-active");
+        }
+      });
+
+      wrapper.appendChild(customSel);
+    }
+
+    function closeAllSelect(elmnt) {
+      const x = document.getElementsByClassName("select-items");
+      const y = document.getElementsByClassName("select-selected");
+      for (let i = 0; i < y.length; i++) {
+        if (elmnt == y[i]) continue;
+        y[i].classList.remove("select-arrow-active");
+        y[i].classList.remove("select-arrow-active-up");
+      }
+      for (let i = 0; i < x.length; i++) {
+        if (elmnt == y[i]) continue;
+        x[i].classList.add("select-hide");
+      }
+    }
+
+    document.addEventListener("click", closeAllSelect);
+
+    // Початкове заповнення
+
+    initMethods();
+
+    let countdownInterval;
+    let totalTimeForFlip = 0;
+    let flipAlerted = false;
+
+    function playDingThreeTimes() {
+      let count = 0;
+      const interval = setInterval(() => {
+        dingSound.currentTime = 0;
+        dingSound.play().catch(e => console.log(e));
+        count++;
+        if (count >= 3) clearInterval(interval);
+      }, 500);
+    }
+
+    // 3. Логіка при натисканні на кнопку
+
+    // Preload audio on click to fix browser autoplay policies
+    calcBtn.addEventListener('click', () => {
+      dingSound.volume = 0;
+      dingSound.play().then(() => { dingSound.pause(); dingSound.currentTime = 0; dingSound.volume = 1; }).catch(e => console.log(e));
+      ringSound.volume = 0;
+      ringSound.play().then(() => { ringSound.pause(); ringSound.currentTime = 0; ringSound.volume = 1; }).catch(e => console.log(e));
+
+      const method = document.getElementById('method').value;
+      const category = document.getElementById('category').value;
+      const product = document.getElementById('product').value;
+      const subtype = document.getElementById('subtype').value;
+      const doneness = document.getElementById('doneness').value;
+      const heat = document.getElementById('heat').value;
+
+      // Шукаємо дані в нашій базі
+      const productData = cookingDB[method]?.[category]?.[product]?.[subtype];
+
+      if (productData && productData[doneness]) {
+        const timeInSeconds = productData[doneness][heat];
+        const tip = productData[doneness].tip;
+
+
+        // Оновлюємо інтерфейс
+        aiTipDisplay.innerText = tip;
+
+
+        // Анімації переходу
+        showScreen(timerScreen);
+
+
+        totalTimeForFlip = timeInSeconds;
+
+        flipAlerted = false;
+
+        // Запускаємо таймер
+        startTimer(timeInSeconds, method);
+      } else {
+        alert("Упс, рецепт для цієї комбінації ще не додано!");
+      }
+    });
+
+
+    stopBtn.addEventListener('click', () => {
       clearInterval(countdownInterval);
-      timeDisplay.innerText = "Готово!";
-      aiTipDisplay.innerText = "Смачного!";
-      aiTipDisplay.style.color = "";
-      ringSound.currentTime = 0;
-      ringSound.play().catch(e => console.log("No sound file yet"));
-    }
-  }, 1000);
-}
+      showScreen(selectionScreen);
+      timeDisplay.innerText = "00:00";
+      timeDisplay.classList.remove('pulse');
+    });
 
-function updateDisplay(totalSeconds) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  timeDisplay.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
+
+    // 4. Функції таймера
+    function startTimer(seconds, method) {
+      clearInterval(countdownInterval);
+      let timeLeft = seconds;
+      updateDisplay(timeLeft);
+
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        updateDisplay(timeLeft);
+
+        // Перевірка на екватор для смаження
+        if (method === "Смажити" && !flipAlerted && timeLeft <= totalTimeForFlip / 2) {
+          flipAlerted = true;
+          aiTipDisplay.innerText = "🚨 Час перевернути або перемішати!";
+          aiTipDisplay.style.color = "#ffdd57"; // виділимо кольором
+          playDingThreeTimes();
+        }
+
+
+        if (timeLeft <= 10 && timeLeft > 0) {
+          timeDisplay.classList.add('pulse');
+        } else {
+          timeDisplay.classList.remove('pulse');
+        }
+
+        if (timeLeft <= 0) {
+
+          clearInterval(countdownInterval);
+          timeDisplay.innerText = "Готово!";
+          aiTipDisplay.innerText = "Смачного!";
+          aiTipDisplay.style.color = "";
+          ringSound.currentTime = 0;
+          ringSound.play().catch(e => console.log("No sound file yet"));
+        }
+      }, 1000);
+    }
+
+    function updateDisplay(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      timeDisplay.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
 
   </script>
 
